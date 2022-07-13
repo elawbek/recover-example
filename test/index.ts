@@ -1,34 +1,25 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 import {
   keccak256,
   parseEther,
   recoverAddress,
   id,
-  AbiCoder,
+  defaultAbiCoder,
   solidityPack,
 } from "ethers/lib/utils";
 
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-
-import { Token, Token__factory } from "../typechain-types";
+import { Token__factory } from "../typechain-types";
 import { constants } from "ethers";
 
 describe("Test", () => {
-  let owner: SignerWithAddress;
-
-  let token: Token;
-
-  beforeEach(async () => {
-    [owner] = await ethers.getSigners();
-
-    token = await new Token__factory(owner).deploy();
-  });
-
   it("recover", async () => {
-    const deadline =
-      (await ethers.provider.getBlock("latest")).timestamp + 1200;
+    const [owner] = await ethers.getSigners();
+    const token = await new Token__factory(owner).deploy();
+
+    const deadline = (await time.latest()) + 1200;
 
     const domain = {
       name: await token.name(),
@@ -66,10 +57,8 @@ describe("Test", () => {
     const EIP712chainId = await owner.getChainId();
     const EIP712TokenAddress = token.address;
 
-    const abiCoder = new AbiCoder();
-
     const domainSeparator = keccak256(
-      abiCoder.encode(
+      defaultAbiCoder.encode(
         ["bytes32", "bytes32", "bytes32", "uint256", "address"],
         [
           EIP712typeHash,
@@ -85,7 +74,7 @@ describe("Test", () => {
       "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
     );
     const structHash = keccak256(
-      abiCoder.encode(
+      defaultAbiCoder.encode(
         ["bytes32", "address", "address", "uint256", "uint256", "uint256"],
         [
           permitTypeHash,
