@@ -1,8 +1,6 @@
 // Ccopied from https://github.com/OpenZeppelin/openzeppelin-contracts/blob/6ab8d6a67e3281ab062bdbe4df32b95c6409ee6d/contracts/utils/cryptography/ECDSA.sol
 
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.7.0) (utils/cryptography/ECDSA.sol)
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Strings.sol";
