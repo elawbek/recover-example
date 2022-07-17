@@ -2,6 +2,8 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 
+import { splitSignature } from "ethers/lib/utils";
+
 import {
   keccak256,
   parseEther,
@@ -93,6 +95,20 @@ describe("Test", () => {
         ["\x19\x01", domainSeparator, structHash]
       )
     );
+
+    const splitted = splitSignature(signature);
+
+    //  https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
+    await token.permit(
+      owner.address,
+      token.address,
+      parseEther("1000"),
+      deadline,
+      splitted.r,
+      splitted.yParityAndS
+    );
+
+    console.log(await token.allowance(owner.address, token.address));
 
     const signer = recoverAddress(digest, signature);
 
