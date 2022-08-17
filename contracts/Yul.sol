@@ -8,7 +8,7 @@ contract Yul {
 
     bytes32 public secretWord;
 
-    error NotSameLengthOwner();
+    error NotSameLength();
     error NotOwner();
 
     constructor(uint256) {
@@ -52,8 +52,8 @@ contract Yul {
             let guessesLength := calldataload(add(0x04, calldataload(0x24)))
 
             if iszero(eq(usersLength, guessesLength)) {
-                // 0xa8dbf92f -> bytes4(keccak256("NotSameLengthOwner()"))
-                mstore(0x00, shl(0xe0, 0xa8dbf92f))
+                // 0x200ad92c -> bytes4(keccak256("NotSameLength()"))
+                mstore(0x00, shl(0xe0, 0x200ad92c))
                 revert(0, 0x04)
             }
 
