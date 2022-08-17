@@ -8,6 +8,9 @@ contract Yul {
 
     bytes32 public secretWord;
 
+    error NotSameLengthOwner();
+    error NotOwner();
+
     constructor(uint256) {
         assembly {
             sstore(_secretNumber.slot, mload(0x80))
@@ -25,7 +28,9 @@ contract Yul {
     function setSecretNumber(uint256) external {
         assembly {
             if iszero(eq(caller(), sload(owner.slot))) {
-                revert(0, 0)
+                // 0x30cd7471 -> bytes4(keccak256("NotOwner()"))
+                mstore(0x00, shl(0xe0, 0x30cd7471))
+                revert(0, 0x04)
             }
             sstore(_secretNumber.slot, calldataload(0x04))
         }
@@ -47,7 +52,9 @@ contract Yul {
             let guessesLength := calldataload(add(0x04, calldataload(0x24)))
 
             if iszero(eq(usersLength, guessesLength)) {
-                revert(0, 0)
+                // 0xa8dbf92f -> bytes4(keccak256("NotSameLengthOwner()"))
+                mstore(0x00, shl(0xe0, 0xa8dbf92f))
+                revert(0, 0x04)
             }
 
             mstore(0x20, guesses.slot)
