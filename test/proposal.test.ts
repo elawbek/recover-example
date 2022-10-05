@@ -1,21 +1,20 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { splitSignature } from "ethers/lib/utils";
+import { splitSignature, id } from "ethers/lib/utils";
 
-import { id } from "ethers/lib/utils";
+import { Proposal__factory } from "../typechain-types";
 
-import { Test__factory } from "../typechain-types";
-
-describe("Test", () => {
+describe("Proposal", () => {
   it("recover", async () => {
     const [owner] = await ethers.getSigners();
-    const test = await new Test__factory(owner).deploy();
+    const proposal = await new Proposal__factory(owner).deploy();
 
     const domain = {
-      name: await test.NAME(),
+      name: await proposal.NAME(),
       chainId: await owner.getChainId(),
       version: "1",
-      verifyingContract: test.address,
+      verifyingContract: proposal.address,
     };
 
     const types = {
@@ -27,24 +26,23 @@ describe("Test", () => {
       ],
     };
 
-    const calldata = test.interface.encodeFunctionData("nonces", [
+    const calldata = proposal.interface.encodeFunctionData("nonces", [
       owner.address,
     ]);
-    const calldata2 = test.interface.encodeFunctionData("NAME");
+    const calldata2 = proposal.interface.encodeFunctionData("NAME");
 
     const value = {
       values: [42, 42],
       calldatas: [calldata, calldata2],
       descriptionHash: id("TEST TEST"),
-      nonce: await test.nonces(owner.address),
+      nonce: await proposal.nonces(owner.address),
     };
 
     const signature = await owner._signTypedData(domain, types, value);
     const splitted = splitSignature(signature);
 
-    console.log(
-      owner.address,
-      await test.proposalData(
+    expect(owner.address).to.eq(
+      await proposal.proposalData(
         [42, 42],
         [calldata, calldata2],
         id("TEST TEST"),

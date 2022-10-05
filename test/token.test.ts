@@ -16,7 +16,7 @@ import {
 import { Token__factory } from "../typechain-types";
 import { constants } from "ethers";
 
-describe("Test", () => {
+describe("Token", () => {
   it("recover", async () => {
     const [owner] = await ethers.getSigners();
     const token = await new Token__factory(owner).deploy();
@@ -108,11 +108,12 @@ describe("Test", () => {
       splitted.yParityAndS
     );
 
-    console.log(await token.allowance(owner.address, token.address));
+    expect(await token.allowance(owner.address, token.address)).to.eq(
+      parseEther("1000")
+    );
 
     const signer = recoverAddress(digest, signature);
 
-    console.log(signer, owner.address);
     expect(signer).to.eq(owner.address);
   });
 });
